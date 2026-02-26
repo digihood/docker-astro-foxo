@@ -153,6 +153,7 @@ export interface CF7Field {
   input_type?: string;
   values?: string[];
   content?: string;
+  css_class?: string;
   // submit button
   type?: string;
   label?: string;

@@ -304,6 +304,7 @@ function foxo_api_get_form( WP_REST_Request $request ) {
     }
 
     $properties = $form->get_properties();
+    $form_body  = isset( $properties['form'] ) ? $properties['form'] : '';
     $tags       = $form->scan_form_tags();
     $fields     = [];
 
@@ -326,6 +327,17 @@ function foxo_api_get_form( WP_REST_Request $request ) {
             'placeholder' => $tag->get_option( 'placeholder', '', true ) ?: ( ! empty( $tag->values ) ? $tag->values[0] : '' ),
             'options'     => $tag->options,
         ];
+
+        // Extract custom CSS classes from tag options (e.g. class:half)
+        $custom_classes = [];
+        foreach ( $tag->options as $opt ) {
+            if ( strpos( $opt, 'class:' ) === 0 ) {
+                $custom_classes[] = substr( $opt, 6 );
+            }
+        }
+        if ( ! empty( $custom_classes ) ) {
+            $field['css_class'] = implode( ' ', $custom_classes );
+        }
 
         // Map CF7 base type
         $base_type = $tag->basetype;
@@ -373,6 +385,31 @@ function foxo_api_get_form( WP_REST_Request $request ) {
 
         $fields[] = $field;
     }
+
+    // Extract labels from the CF7 form body template
+    foreach ( $fields as &$field ) {
+        if ( empty( $field['name'] ) ) {
+            continue;
+        }
+
+        $name_escaped = preg_quote( $field['name'], '/' );
+
+        // Pattern 1: <label...>LABEL_TEXT [tag field-name ...]</label>
+        if ( preg_match( '/<label[^>]*>\s*(.+?)\s*\[\w+\*?\s+' . $name_escaped . '\b/s', $form_body, $m ) ) {
+            $label_text = trim( strip_tags( $m[1] ) );
+            if ( $label_text ) {
+                $field['label'] = $label_text;
+            }
+        }
+        // Pattern 2: <label...>LABEL_TEXT</label> ... [tag field-name ...]
+        elseif ( preg_match( '/<label[^>]*>\s*(.+?)\s*<\/label>\s*\[\w+\*?\s+' . $name_escaped . '\b/s', $form_body, $m ) ) {
+            $label_text = trim( strip_tags( $m[1] ) );
+            if ( $label_text ) {
+                $field['label'] = $label_text;
+            }
+        }
+    }
+    unset( $field );
 
     // Additional settings (redirect, etc.)
     $additional = isset( $properties['additional_settings'] ) ? $properties['additional_settings'] : '';

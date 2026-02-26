@@ -24,6 +24,31 @@ function foxo_format_image( $image ) {
 }
 
 /**
+ * Formátuje ACF link pole — převede absolutní WP URL na relativní cestu
+ *
+ * @param array|null $link  ACF link array {title, url, target}
+ * @return array|null
+ */
+function foxo_format_link( $link ) {
+    if ( ! $link || ! is_array( $link ) || empty( $link['url'] ) ) {
+        return null;
+    }
+
+    $url      = $link['url'];
+    $site_url = trailingslashit( get_site_url() );
+
+    if ( str_starts_with( $url, $site_url ) ) {
+        $url = '/' . ltrim( str_replace( $site_url, '', $url ), '/' );
+    }
+
+    return [
+        'title'  => $link['title'] ?? '',
+        'url'    => $url,
+        'target' => $link['target'] ?? '',
+    ];
+}
+
+/**
  * Povolí nahrávání SVG do WordPress media knihovny
  */
 function foxo_allow_svg_upload( $mimes ) {

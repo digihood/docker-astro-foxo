@@ -285,8 +285,8 @@ function foxo_api_get_options() {
             'facebook'  => get_field( 'social_facebook', 'option' ) ?: '',
         ],
         'copyright_text'     => get_field( 'copyright_text', 'option' ) ?: '',
-        'privacy_link'       => get_field( 'privacy_link', 'option' ) ?: null,
-        'terms_link'         => get_field( 'terms_link', 'option' ) ?: null,
+        'privacy_link'       => foxo_format_link( get_field( 'privacy_link', 'option' ) ),
+        'terms_link'         => foxo_format_link( get_field( 'terms_link', 'option' ) ),
     ] );
 }
 

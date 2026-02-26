@@ -1,0 +1,94 @@
+---
+interface Props {
+  pageId?: number;
+  pageTitle?: string;
+}
+
+const { pageId, pageTitle } = Astro.props;
+const wpAdminUrl = (import.meta.env.WP_API_URL || 'http://localhost:8080') + '/wp-admin';
+const editUrl = pageId ? `${wpAdminUrl}/post.php?post=${pageId}&action=edit` : '';
+---
+
+<div
+  id="foxo-admin-bar"
+  class="sticky top-0 left-0 right-0 z-[9999] bg-[#1d2327] text-[#c3c4c7] text-sm h-8 items-center px-4 gap-4 hidden"
+  data-wp-admin={wpAdminUrl}
+  data-page-id={pageId}
+>
+  <!-- WP logo + Dashboard -->
+  <a
+    href={wpAdminUrl}
+    target="_blank"
+    rel="noopener"
+    class="flex items-center gap-1.5 hover:text-[#72aee6] transition-colors h-full px-2"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1"><path d="M518 542.6L452.4 734h-0.2l-50.8 146.2c3.6 1 7 1.8 10.6 2.8h0.6c31.6 8.4 64.8 13 99 13 17 0 33.6-1 49.8-3.6 22.4-2.8 44-7.6 65-14.2 5.2-1.6 10.4-3.4 15.6-5.2-5.6-12-17.6-38.6-18.2-39.8L518 542.6zM161.6 361C141.6 406.2 128 461.8 128 512c0 12.6 0.6 25.2 1.8 37.6 13.8 142.4 105.8 262 232.2 315.8 5.2 2.2 10.6 4.4 16 6.4L192 361.2c-16-0.6-19 0.4-30.4-0.2z"/><path d="M860.4 350.8c-8.6-18.6-18.8-36.4-30.2-53.2-3.2-4.8-6.8-9.6-10.2-14.4-43-57.6-101.6-102.8-169.8-129.2-42.8-16.8-89.6-26-138.4-26-120.6 0-228.4 56-298.8 143.4-13 16-24.6 33.2-35 51.2 28.4 0.2 63.6 0.2 67.6 0.2 36.2 0 92-4.4 92-4.4 18.8-1.2 20.8 26.2 2.2 28.4 0 0-18.8 2.2-39.6 3.2L426 724l75.6-226.6-53.6-147.2c-18.8-1-36.2-3.2-36.2-3.2-18.8-1-16.4-29.6 2-28.4 0 0 57 4.4 91 4.4 36.2 0 92-4.4 92-4.4 18.6-1.2 21 26.2 2.2 28.4 0 0-18.6 2.2-39.4 3.2l124.6 371.2 34.6-115.2c17.4-44.8 26.2-81.8 26.2-111.4 0-42.6-15.4-72.2-28.6-95.2-17.4-28.6-33.8-52.6-33.8-80.8 0-31.8 24-61.4 58-61.4h4.4c52.4-1.4 69.6 50.6 71.8 86v1.2c0.8 14.4 0.2 25 0.2 37.6 0 34.8-6.6 74.2-26.2 123.6l-78 225.6-44.6 131.4c3.6-1.6 7-3.2 10.6-5 113.4-54.8 196-164 213.4-293.4 2.6-17 3.8-34.4 3.8-52 0-57.8-12.8-112.6-35.6-161.6z"/></svg>
+    Nástěnka
+  </a>
+
+  <!-- Divider -->
+  <span class="w-px h-4 bg-[#3c434a]"></span>
+
+  {editUrl && (
+    <a
+      href={editUrl}
+      target="_blank"
+      rel="noopener"
+      class="flex items-center gap-1.5 hover:text-[#72aee6] transition-colors h-full px-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+        <path d="M13.89 3.39l2.71 2.72c.46.46.42 1.24.03 1.64l-8.01 8.02-2.98.86c-.58.17-1.1-.35-.93-.93l.85-2.98 8.01-8.02c.4-.39 1.18-.43 1.64.03l-.32-.34zm-2.75 5.47L6.07 13.93l-.57 2.01 2.01-.57 5.07-5.07-1.44-1.44zm3.65-3.65l-1.44-1.44-.86.86 1.44 1.44.86-.86z"/>
+      </svg>
+      Upravit stránku
+    </a>
+  )}
+
+  {pageTitle && (
+    <>
+      <span class="w-px h-4 bg-[#3c434a]"></span>
+      <span class="text-[#9ea3a8] truncate max-w-48">{pageTitle}</span>
+    </>
+  )}
+
+  <!-- Close button -->
+  <button
+    id="foxo-admin-bar-close"
+    class="ml-auto hover:text-white transition-colors h-full px-2 cursor-pointer"
+    aria-label="Zavřít admin bar"
+  >
+    &times;
+  </button>
+</div>
+
+<script is:inline>
+(function() {
+  var bar = document.getElementById('foxo-admin-bar');
+  if (!bar) return;
+
+  function showBar() {
+    bar.style.display = 'flex';
+  }
+
+  function hideBar() {
+    bar.style.display = 'none';
+    sessionStorage.removeItem('foxo_admin');
+  }
+
+  // 1) URL param from WP headless redirect (logged-in user visits WP → redirected to Astro)
+  if (new URLSearchParams(window.location.search).has('wp-admin-bar')) {
+    sessionStorage.setItem('foxo_admin', '1');
+    // Clean URL
+    var url = new URL(window.location);
+    url.searchParams.delete('wp-admin-bar');
+    window.history.replaceState({}, '', url);
+  }
+
+  // 2) SessionStorage flag (persists while browsing)
+  if (sessionStorage.getItem('foxo_admin') === '1') {
+    showBar();
+  }
+
+  // Close button
+  document.getElementById('foxo-admin-bar-close').addEventListener('click', hideBar);
+})();
+</script>

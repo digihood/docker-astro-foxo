@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getMenu, getOptions } from '../lib/wp-api';
+import type { WPMenuItem, WPSiteOptions } from '../lib/types';
+
+let mainMenu: WPMenuItem[] = [];
+let footerMenu: WPMenuItem[] = [];
+let options: WPSiteOptions | undefined;
+
+try {
+  [mainMenu, footerMenu, options] = await Promise.all([
+    getMenu('main_menu'),
+    getMenu('footer_menu'),
+    getOptions(),
+  ]);
+} catch {}
+---
+
+<Layout menuItems={mainMenu} footerMenuItems={footerMenu} options={options} pageTitle="Stránka nenalezena">
+  <section class="min-h-[70vh] flex items-center justify-center px-6">
+    <div class="text-center max-w-lg">
+      <p class="text-[#f7941e] text-8xl md:text-9xl font-bold tracking-tight">404</p>
+      <h1 class="text-3xl md:text-4xl font-bold text-white mt-4">Stránka nenalezena</h1>
+      <p class="text-gray-400 mt-4 text-lg leading-relaxed">
+        Omlouváme se, ale stránka kterou hledáte neexistuje nebo byla přesunuta.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/"
+          class="bg-[#f7941e] text-white px-8 py-3 rounded-full hover:bg-[#e08315] transition-all font-medium"
+        >
+          Zpět na úvodní stránku
+        </a>
+        <a
+          href="/#kontakt"
+          class="border border-white/20 text-white px-8 py-3 rounded-full hover:bg-white/10 transition-all font-medium"
+        >
+          Kontaktujte nás
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,36 @@
+version: '3'
+services:
+
+  # Konfigurace MySQL kontejneru
+  database:
+    image: mysql:5.7 # Zdrojový image ve verzi 5.7 z repositáře https://hub.docker.com/_/mysql
+    ports:
+      - "3307:3306" # Mapování portů lokální:virtuální prostředí
+    environment: # .ENV proměnné pro kontejner
+      MYSQL_USER: root # Uživatelské jméno k databázi
+      MYSQL_ROOT_PASSWORD: root # Heslo k databázi
+    volumes:
+      - ./data:/var/lib/mysql # Mapování adresáře s daty databáze lokální:virtuální prostředí
+
+  # Konfigurace WordPress (Apache) kontejneru
+  wordpress:
+    build: ./ # Image se definuje v Dockerfile, který ho rozšiřuje
+    ports:
+      - "8080:80" # Mapování portů lokální:virtuální prostředí
+    volumes:
+      - ./public_html:/var/www/html:delegated # Mapování adresáře lokální:virtuální (delegated pozitivně ovliňuje výkon)
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini:ro # Mapování php.ini (ro = read only)
+    depends_on:
+      - database # Závislost kontejneru na ostatních kontejnerech
+
+  # Konfigurace PHPMyAdmin kontejneru
+  phpmyadmin:
+    image: phpmyadmin:latest # Zdrojový image z repositáře https://hub.docker.com/r/phpmyadmin/phpmyadmin/
+    ports:
+      - 8000:80 # Mapování portů lokální:virtuální prostředí
+    environment: # .ENV proměnné pro kontejner
+      PMA_HOST: database
+    volumes:
+      - ./phpmyadmin.ini:/usr/local/etc/php/conf.d/php.ini:ro # Mapování php.ini (ro = read only)
+    depends_on:
+      - database # Závislost kontejneru na ostatních kontejnerech

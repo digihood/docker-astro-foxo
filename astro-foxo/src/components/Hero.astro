@@ -1,0 +1,94 @@
+---
+import type { HeroBlockData } from '../lib/types';
+
+interface Props {
+  data: HeroBlockData;
+}
+
+const { data } = Astro.props;
+
+function getYouTubeEmbedUrl(url: string): string {
+  if (!url) return '';
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+}
+
+const embedUrl = getYouTubeEmbedUrl(data.hero_youtube_url || '');
+---
+
+<section class="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+  <!-- Background glow effects -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#f7941e]/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#f7941e]/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div>
+        <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 text-white leading-tight">
+          {data.hero_heading_line1}
+          <br />
+          <span class="text-[#f7941e]">{data.hero_heading_line2}</span>
+        </h1>
+
+        {data.hero_description && (
+          <p class="text-xl text-gray-300 mb-8 leading-relaxed">
+            {data.hero_description}
+          </p>
+        )}
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          {data.hero_cta_primary && (
+            <a
+              href={data.hero_cta_primary.url}
+              target={data.hero_cta_primary.target || undefined}
+              rel={data.hero_cta_primary.target ? 'noopener noreferrer' : undefined}
+              class="inline-flex items-center justify-center gap-2 bg-[#f7941e] text-white px-8 py-4 rounded-full hover:bg-[#e08315] transition-all shadow-lg shadow-[#f7941e]/30"
+            >
+              {data.hero_cta_primary.title}
+              <!-- ArrowRight icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </a>
+          )}
+          {data.hero_cta_secondary && (
+            <a
+              href={data.hero_cta_secondary.url}
+              target={data.hero_cta_secondary.target || undefined}
+              rel={data.hero_cta_secondary.target ? 'noopener noreferrer' : undefined}
+              class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-full hover:bg-white/20 transition-all"
+            >
+              {data.hero_cta_secondary.title}
+            </a>
+          )}
+        </div>
+      </div>
+
+      {embedUrl && (
+        <div class="relative">
+          <!-- Glassmorphic Video Container -->
+          <div class="relative bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-4 shadow-2xl hover:border-[#f7941e]/50 transition-all">
+            <!-- YouTube Video Embed -->
+            <div class="relative overflow-hidden rounded-2xl" style="aspect-ratio: 1/1; max-height: 600px">
+              <iframe
+                src={embedUrl}
+                title="YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="absolute top-0 left-0 w-full h-full"
+              ></iframe>
+            </div>
+
+            <!-- Decorative corner accents -->
+            <div class="absolute top-2 left-2 w-12 h-12 border-l-2 border-t-2 border-[#f7941e] rounded-tl-2xl"></div>
+            <div class="absolute bottom-2 right-2 w-12 h-12 border-r-2 border-b-2 border-[#f7941e] rounded-br-2xl"></div>
+          </div>
+
+          <!-- Orange accent glow -->
+          <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#f7941e] rounded-3xl blur-2xl opacity-50 -z-10"></div>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

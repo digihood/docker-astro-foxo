@@ -1,0 +1,74 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import AdminBar from "../components/AdminBar.astro";
+import CookieConsent from "../components/CookieConsent.astro";
+import '../styles/global.css';
+import type { WPMenuItem, WPSiteOptions } from '../lib/types';
+
+interface Props {
+	seoHead?: string;
+	menuItems?: WPMenuItem[];
+	footerMenuItems?: WPMenuItem[];
+	options?: WPSiteOptions;
+	pageId?: number;
+	pageTitle?: string;
+	lang?: string;
+}
+
+const {
+	seoHead = '',
+	menuItems = [],
+	footerMenuItems = [],
+	options,
+	pageId,
+	pageTitle,
+	lang = "cs",
+} = Astro.props;
+
+const defaultOptions: WPSiteOptions = {
+	logo: null,
+	favicon: '',
+	footer_description: '',
+	footer_contact: '',
+	social: { instagram: '', linkedin: '', youtube: '', facebook: '' },
+	copyright_text: '',
+};
+
+const siteOptions = options || defaultOptions;
+---
+
+<html lang={lang}>
+	<head>
+		<meta charset="utf-8" />
+		{siteOptions.favicon ? (
+			<link rel="icon" href={siteOptions.favicon} />
+		) : (
+			<>
+				<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+				<link rel="icon" href="/favicon.ico" />
+			</>
+		)}
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		{seoHead ? (
+			<Fragment set:html={seoHead} />
+		) : (
+			<>
+				<title>Foxo</title>
+				<meta name="description" content="Kreativní marketingová a grafická agentura transformující značky prostřednictvím strategické kreativity a inovativního designu." />
+			</>
+		)}
+	</head>
+	<body>
+		<CookieConsent />
+		<AdminBar pageId={pageId} pageTitle={pageTitle} />
+		<div class="min-h-screen bg-linear-to-br from-black via-gray-900 to-black flex flex-col">
+			<Header menuItems={menuItems} options={siteOptions} />
+			<main class="h-full mb-auto">
+				<slot />
+			</main>
+			<Footer menuItems={footerMenuItems} options={siteOptions} />
+		</div>
+	</body>
+</html>

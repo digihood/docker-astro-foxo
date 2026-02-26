@@ -1,0 +1,112 @@
+# Translation of Plugins - Go Live Update Urls - Stable (latest release) in Czech
+# This file is distributed under the same license as the Plugins - Go Live Update Urls - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-04-15 20:02:54+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n >= 2 && n <= 4) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.0\n"
+"Language: cs_CZ\n"
+"Project-Id-Version: Plugins - Go Live Update Urls - Stable (latest release)\n"
+
+#: src/Skip_Rows.php:87
+msgid "You must set a table and DB id before skipping a row."
+msgstr "Pro přeskočení řádku musíte zvolit tabulku a databázové id."
+
+#. Description of the plugin
+#: go-live-update-urls.php
+msgid "Updates every URL on your site when going live or changing domains."
+msgstr "Upraví každou URL na vašem webu při přechodu do ostrého provozu nebo při změně domény."
+
+#: src/Core.php:136
+msgid "Settings"
+msgstr "Nastavení"
+
+#: src/Core.php:138
+msgid "Go PRO"
+msgstr "Přejít na PRO"
+
+#: src/Admin.php:181
+msgid "These tables are safe to update."
+msgstr "Úprava těchto tabulek je bezpečná."
+
+#: src/Admin.php:144
+msgid "Replaces all occurrences in the entire database of the Old URL with a New URL."
+msgstr "Nahrazuje v databázi všechny výskyty staré adresy za novou adresu."
+
+#: src/Admin.php:99
+msgid "You must select tables and fill out both the Old URL and New URL to update urls!"
+msgstr "Pro úpravu musíte zaškrtnout tabulky a vyplnit starou i novou adresu!"
+
+#. translators: Link to plugin {%1$s}[<a
+#. href="https://onpointplugins.com/product/go-live-update-urls-pro/">]{%2$s}[</a>]
+#: go-live-update-urls.php:93
+msgctxt "{<a>}{</a>}"
+msgid "Go Live Update Urls requires %1$sGo Live Update Urls PRO %3$s+%2$s. Please update or deactivate the PRO version."
+msgstr "Go Live Update Urls vyžaduje %1$sGo Live Update Urls PRO %3$s+%2$s. Prosím aktualizujte nebo deaktivujte verzi PRO."
+
+#. translators: <a></a>
+#: src/Admin.php:282
+msgctxt "{<a>}{</a>}"
+msgid "Use the %1$sPRO version%2$s to test URL updates before making them."
+msgstr "Pro otestování změn adresy před jejich provedením použijte %1$sPRO version%2$s."
+
+#. Author URI of the plugin
+#: go-live-update-urls.php
+msgid "https://onpointplugins.com"
+msgstr "https://onpointplugins.com"
+
+#. Author of the plugin
+#: go-live-update-urls.php
+msgid "OnPoint Plugins"
+msgstr "OnPoint Plugins"
+
+#. Plugin URI of the plugin
+#: go-live-update-urls.php
+msgid "https://onpointplugins.com/go-live-update-urls/"
+msgstr "https://onpointplugins.com/go-live-update-urls/"
+
+#: src/Admin.php:290
+msgid "Update Urls"
+msgstr "Upravit adresy"
+
+#. Plugin Name of the plugin
+#: go-live-update-urls.php src/Admin.php:139
+msgid "Go Live Update Urls"
+msgstr "Go Live Update Urls"
+
+#: src/Admin.php:191 src/Admin.php:221
+msgid "Only the checked tables will be updated."
+msgstr "Budou upraveny pouze zaškrtnuté tabulky."
+
+#: src/Admin.php:257 src/Admin.php:267
+msgid "New URL"
+msgstr "Nová adresa"
+
+#: src/Admin.php:241 src/Admin.php:251
+msgid "Old URL"
+msgstr "Stará adresa"
+
+#. translators: <br /> <a> </a>
+#: src/Admin.php:212
+msgctxt "{<br />}{<a>}{</a>}"
+msgid "These tables are not safe to update with the basic version of this plugin! %1$sTo update tables created by plugins, use the %2$sPRO version%3$s."
+msgstr "Úprava těchto tabulek se základní verzí pluginu není bezpečná! %1$sPro úpravu tabulek vytvořených pomocí pluginů, použijte %2$sPRO verzi%3$s."
+
+#: src/Admin.php:205
+msgid "Tables created by plugins"
+msgstr "Tabulky vytvořené pluginy"
+
+#: src/Admin.php:176
+msgid "WordPress core tables"
+msgstr "Základní tabulky WordPressu"
+
+#: src/Admin.php:80
+msgid "The urls in the checked tables have been updated."
+msgstr "Adresy v zaškrtnutých tabulkách byly upraveny."
+
+#: src/Admin.php:46
+msgid "Ouch! That hurt! You should not be here!"
+msgstr "Au! To bolí! Tady byste neměli být!"

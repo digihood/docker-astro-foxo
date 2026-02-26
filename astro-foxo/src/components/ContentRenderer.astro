@@ -1,0 +1,43 @@
+---
+import type { WPBlock } from '../lib/types';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Services from './Services.astro';
+import References from './References.astro';
+import Testimonials from './Testimonials.astro';
+import Contact from './Contact.astro';
+import ThankYou from './ThankYou.astro';
+
+interface Props {
+  blocks: WPBlock[];
+  content?: string;
+  title?: string;
+}
+
+const { blocks, content, title } = Astro.props;
+
+const blockMap: Record<string, any> = {
+  'acf/foxo-hero': Hero,
+  'acf/foxo-about': About,
+  'acf/foxo-services': Services,
+  'acf/foxo-references': References,
+  'acf/foxo-testimonials': Testimonials,
+  'acf/foxo-contact': Contact,
+  'acf/foxo-thankyou': ThankYou,
+};
+
+const hasAcfBlocks = blocks.some(b => b.blockName in blockMap);
+---
+
+{hasAcfBlocks ? (
+  blocks.map((block) => {
+    const Component = blockMap[block.blockName];
+    if (!Component) return null;
+    return <Component data={block.acf} />;
+  })
+) : content ? (
+  <article class="wp-content max-w-4xl mx-auto px-6 py-16 md:py-24">
+    {title && <h1>{title}</h1>}
+    <Fragment set:html={content} />
+  </article>
+) : null}

@@ -1,0 +1,130 @@
+---
+interface Props {
+  data: {
+    ty_heading?: string;
+    ty_description?: string;
+    ty_text?: string;
+    ty_pricing_col_role?: string;
+    ty_pricing_col_price?: string;
+    ty_pricing?: { role: string; price: string }[];
+    ty_cards?: { label: string; value: string }[];
+    ty_cta?: { title: string; url: string; target: string };
+  };
+}
+
+const { data } = Astro.props;
+const heading = data.ty_heading || 'Děkujeme!';
+const description = data.ty_description || '';
+const text = data.ty_text || '';
+const colRole = data.ty_pricing_col_role || 'Role v projektu';
+const colPrice = data.ty_pricing_col_price || 'Hodinová sazba (bez DPH)';
+const pricing = data.ty_pricing || [];
+const cards = data.ty_cards || [];
+const cta = data.ty_cta;
+
+// Hardcoded SVG icons mapped by card index
+const cardIcons = [
+  // Phone
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  // Mail
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  // User
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  // MapPin
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  // Globe
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`,
+  // Clock
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+];
+---
+
+<section class="py-20 md:py-28 relative overflow-hidden min-h-screen flex items-center">
+  <!-- Background glow -->
+  <div class="absolute top-0 left-0 w-96 h-96 bg-[#f7941e]/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-[#f7941e]/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+    <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 md:p-16">
+      <!-- Success Icon -->
+      <div class="flex justify-center mb-8">
+        <div class="w-24 h-24 bg-[#f7941e]/20 rounded-full flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f7941e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">{heading}</h2>
+
+      {description && (
+        <p class="text-xl text-gray-300 mb-4 leading-relaxed">{description}</p>
+      )}
+
+      {text && (
+        <p class="text-lg text-gray-400 mb-12 leading-relaxed max-w-2xl mx-auto">{text}</p>
+      )}
+
+      <!-- Pricing Table -->
+      {pricing.length > 0 && (
+        <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden mb-12 max-w-3xl mx-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-white/10">
+                <th class="text-left px-6 py-4 text-gray-300 font-semibold hidden md:table-cell">{colRole}</th>
+                <th class="text-right px-6 py-4 text-gray-300 font-semibold hidden md:table-cell">{colPrice}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pricing.map((item, i) => (
+                <tr class:list={[
+                  'hover:bg-white/5 transition-all flex flex-col md:table-row',
+                  i < pricing.length - 1 ? 'border-b border-white/10' : '',
+                ]}>
+                  <td class="px-6 pt-4 pb-1 md:py-4 text-white text-left">{item.role}</td>
+                  <td class="px-6 pt-1 pb-4 md:py-4 text-left md:text-right text-[#f7941e] font-semibold">{item.price}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <!-- Contact Cards -->
+      {cards.length > 0 && (
+        <div class:list={[
+          'grid gap-6 mb-12',
+          cards.length === 1 ? 'grid-cols-1 max-w-sm mx-auto' :
+          cards.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto' :
+          'grid-cols-1 md:grid-cols-3',
+        ]}>
+          {cards.map((card, i) => (
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div class="text-[#f7941e] flex justify-center mb-3">
+                <Fragment set:html={cardIcons[i % cardIcons.length]} />
+              </div>
+              <p class="text-sm text-gray-400 mb-1">{card.label}</p>
+              <p class="text-white font-semibold">{card.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- CTA Button -->
+      {cta?.url && (
+        <a
+          href={cta.url}
+          target={cta.target || '_self'}
+          class="inline-flex items-center gap-2 bg-[#f7941e] text-white px-8 py-4 rounded-full hover:bg-[#e08315] transition-all shadow-lg shadow-[#f7941e]/30"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+          </svg>
+          {cta.title || 'Zpět'}
+        </a>
+      )}
+    </div>
+  </div>
+</section>

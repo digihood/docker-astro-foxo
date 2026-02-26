@@ -1,0 +1,43 @@
+---
+import type { AboutBlockData } from '../lib/types';
+
+interface Props {
+  data: AboutBlockData;
+}
+
+const { data } = Astro.props;
+---
+
+<section id="about" class="py-20 md:py-28 relative">
+  <!-- Background glow -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-[#f7941e]/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-3xl mb-16">
+      <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
+        {data.about_heading} <span class="text-[#f7941e]">{data.about_heading_highlight}</span>
+      </h2>
+      {data.about_description && (
+        <p class="text-xl text-gray-300 leading-relaxed">
+          {data.about_description}
+        </p>
+      )}
+    </div>
+
+    {data.about_features && data.about_features.length > 0 && (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {data.about_features.map((feature) => (
+          <div class="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-2xl hover:bg-white/10 hover:border-[#f7941e]/50 transition-all">
+            {feature.icon && (
+              <div class="w-14 h-14 bg-[#f7941e]/20 rounded-xl flex items-center justify-center mb-6 backdrop-blur-md">
+                <img src={feature.icon.url} alt={feature.icon.alt} width="28" height="28" class="w-7 h-7" />
+              </div>
+            )}
+            <h3 class="text-xl font-bold mb-3 text-white">{feature.title}</h3>
+            <p class="text-gray-400 leading-relaxed">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>

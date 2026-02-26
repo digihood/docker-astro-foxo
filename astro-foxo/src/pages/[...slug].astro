@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContentRenderer from '../components/ContentRenderer.astro';
+import { getPage, getMenu, getOptions, getSeoHead } from '../lib/wp-api';
+import type { WPPageResponse, WPMenuItem, WPSiteOptions } from '../lib/types';
+
+const WP_API_URL = import.meta.env.WP_API_URL || 'http://localhost:8080';
+const slug = Astro.params.slug || 'home';
+
+let page: WPPageResponse;
+let mainMenu: WPMenuItem[] = [];
+let footerMenu: WPMenuItem[] = [];
+let options: WPSiteOptions | undefined;
+let seoHead = '';
+
+// Sestavit WP URL pro Rank Math
+const wpPageUrl = slug === 'home'
+  ? `${WP_API_URL}/`
+  : `${WP_API_URL}/${slug}/`;
+
+try {
+  [page, mainMenu, footerMenu, options, seoHead] = await Promise.all([
+    getPage(slug),
+    getMenu('main_menu'),
+    getMenu('footer_menu'),
+    getOptions(),
+    getSeoHead(wpPageUrl),
+  ]);
+} catch {
+  return Astro.rewrite('/404');
+}
+---
+
+<Layout seoHead={seoHead} menuItems={mainMenu} footerMenuItems={footerMenu} options={options} pageId={page.id} pageTitle={page.title}>
+  <ContentRenderer blocks={page.blocks} content={page.content} title={page.title} />
+</Layout>

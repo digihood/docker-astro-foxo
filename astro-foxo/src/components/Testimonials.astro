@@ -1,0 +1,48 @@
+---
+import type { TestimonialsBlockData } from '../lib/types';
+
+interface Props {
+  data: TestimonialsBlockData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="py-20 md:py-28 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    {data.test_heading && (
+      <h3 class="text-3xl md:text-4xl font-bold text-center mb-4 text-white">
+        {data.test_heading}
+      </h3>
+    )}
+
+    {data.test_description && (
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed text-center mb-12">
+        {data.test_description}
+      </p>
+    )}
+
+    {data.test_items && data.test_items.length > 0 && (
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {data.test_items.map((testimonial) => (
+          <div class="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-2xl hover:bg-white/10 transition-all">
+            <div class="flex gap-1 mb-4">
+              {Array.from({ length: testimonial.rating || 0 }).map(() => (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#f7941e" stroke="#f7941e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              ))}
+            </div>
+
+            <p class="text-gray-300 mb-6 leading-relaxed italic">"{testimonial.quote}"</p>
+
+            <div class="pt-4 border-t border-white/10">
+              <p class="text-white font-bold">{testimonial.author}</p>
+              <p class="text-sm text-gray-500">{testimonial.position}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>

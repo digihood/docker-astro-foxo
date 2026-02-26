@@ -1,0 +1,114 @@
+---
+import type { WPMenuItem, WPSiteOptions } from '../lib/types';
+
+interface Props {
+  menuItems: WPMenuItem[];
+  options: WPSiteOptions;
+}
+
+const { menuItems, options } = Astro.props;
+
+// Poslední položka s třídou "cta-button" bude CTA
+const ctaItem = menuItems.find(item => item.classes.includes('cta-button')) || menuItems[menuItems.length - 1];
+const navItems = ctaItem ? menuItems.filter(item => item.id !== ctaItem.id) : menuItems;
+---
+
+<header class="fixed top-0 left-0 right-0 bg-black/40 backdrop-blur-xl z-50 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <a href="/" class="flex items-center gap-3">
+        {options.logo && (
+          <img src={options.logo.url} alt={options.logo.alt || 'Logo'} class="h-12 w-12" />
+        )}
+        <span class="text-2xl font-bold tracking-tight text-white">Foxo</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-8">
+        {navItems.map((item) => (
+          <a
+            href={item.url}
+            target={item.target || undefined}
+            class="text-gray-300 hover:text-[#f7941e] transition-colors"
+          >
+            {item.title}
+          </a>
+        ))}
+        {ctaItem && (
+          <a
+            href={ctaItem.url}
+            target={ctaItem.target || undefined}
+            class="bg-[#f7941e] text-white px-6 py-3 rounded-full hover:bg-[#e08315] transition-all"
+          >
+            {ctaItem.title}
+          </a>
+        )}
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden p-2 rounded-md text-white"
+        aria-label="Toggle menu"
+      >
+        <!-- Menu icon -->
+        <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" x2="20" y1="12" y2="12"></line>
+          <line x1="4" x2="20" y1="6" y2="6"></line>
+          <line x1="4" x2="20" y1="18" y2="18"></line>
+        </svg>
+        <!-- X icon (hidden by default) -->
+        <svg id="close-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav id="mobile-menu" class="md:hidden py-4 space-y-2 bg-black/60 backdrop-blur-xl rounded-2xl mb-4 hidden">
+      {navItems.map((item) => (
+        <a
+          href={item.url}
+          target={item.target || undefined}
+          class="mobile-nav-link block w-full text-left px-4 py-3 text-gray-300 hover:bg-white/10 rounded-md transition-colors"
+        >
+          {item.title}
+        </a>
+      ))}
+      {ctaItem && (
+        <a
+          href={ctaItem.url}
+          target={ctaItem.target || undefined}
+          class="mobile-nav-link block w-full text-left px-4 py-3 bg-[#f7941e] text-white rounded-md hover:bg-[#e08315] transition-colors mt-2"
+        >
+          {ctaItem.title}
+        </a>
+      )}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById("mobile-menu-btn")!;
+  const mobileMenu = document.getElementById("mobile-menu")!;
+  const menuIcon = document.getElementById("menu-icon")!;
+  const closeIcon = document.getElementById("close-icon")!;
+  let isMenuOpen = false;
+
+  function toggleMenu() {
+    isMenuOpen = !isMenuOpen;
+    mobileMenu.classList.toggle("hidden", !isMenuOpen);
+    menuIcon.classList.toggle("hidden", isMenuOpen);
+    closeIcon.classList.toggle("hidden", !isMenuOpen);
+  }
+
+  menuBtn.addEventListener("click", toggleMenu);
+
+  // Close mobile menu on link click
+  document.querySelectorAll<HTMLAnchorElement>("#mobile-menu a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isMenuOpen) toggleMenu();
+    });
+  });
+</script>

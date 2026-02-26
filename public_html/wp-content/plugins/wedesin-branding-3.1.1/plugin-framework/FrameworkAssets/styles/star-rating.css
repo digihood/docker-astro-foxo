@@ -1,0 +1,30 @@
+
+.star-rating-wrp {
+    clear: both;
+}
+
+.star-rating-input {
+	unicode-bidi: bidi-override;
+	direction: rtl;
+	margin-left: 1rem;
+}
+
+.star-rating-input>label {
+    display: inline-block;
+    position: relative;
+    font-size: 30px;
+    line-height: 1;
+    margin: 0;
+    color: black;
+}
+
+.star-rating-input>label.active:before,
+.star-rating-input>label:hover:before,
+.star-rating-input>label:hover~label:before {
+	content: "\2605";
+	position: absolute;
+}
+
+#star_rating {
+	margin-bottom: 35px;
+}

@@ -1,0 +1,23 @@
+<!-- Google Consent Mode v2 defaults — MUSÍ být PŘED GTM -->
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    functionality_storage: 'denied',
+    personalization_storage: 'denied',
+    security_storage: 'granted',
+    wait_for_update: 500
+  });
+</script>
+
+<!-- GTM — async, neblokuje render -->
+<script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-PZW2GT5B"></script>
+
+<!-- GTM noscript fallback -->
+<noscript>
+  <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PZW2GT5B" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>

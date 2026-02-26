@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContentRenderer from '../components/ContentRenderer.astro';
+import { getPage, getMenu, getOptions } from '../lib/wp-api';
+import type { WPPageResponse, WPMenuItem, WPSiteOptions } from '../lib/types';
+
+const PREVIEW_SECRET = import.meta.env.PREVIEW_SECRET || 'dev-preview-secret';
+
+const id = Astro.url.searchParams.get('id');
+const token = Astro.url.searchParams.get('token');
+
+if (!id || !token || token !== PREVIEW_SECRET) {
+  return new Response('Neplatný preview požadavek', { status: 401 });
+}
+
+let page: WPPageResponse;
+let mainMenu: WPMenuItem[] = [];
+let footerMenu: WPMenuItem[] = [];
+let options: WPSiteOptions | undefined;
+
+const WP_API_URL = import.meta.env.WP_API_URL || 'http://localhost:8080';
+
+try {
+  // Fetch draft stránky přímo přes WP REST API (s preview parametrem)
+  const res = await fetch(
+    `${WP_API_URL}/wp-json/foxo/v1/page/${id}?preview=true&token=${encodeURIComponent(token)}`
+  );
+
+  if (!res.ok) {
+    return new Response('Stránka nenalezena', { status: 404 });
+  }
+
+  page = await res.json();
+
+  [mainMenu, footerMenu, options] = await Promise.all([
+    getMenu('main_menu'),
+    getMenu('footer_menu'),
+    getOptions(),
+  ]);
+} catch {
+  return new Response('Chyba při načítání preview', { status: 500 });
+}
+---
+
+<Layout menuItems={mainMenu} footerMenuItems={footerMenu} options={options} pageId={page.id} pageTitle={page.title}>
+  <!-- Preview banner -->
+  <div class="fixed top-20 left-0 right-0 z-40 bg-yellow-500 text-black text-center py-2 text-sm font-semibold">
+    Preview mód — tento obsah ještě není publikován
+  </div>
+  <div class="pt-10">
+    <ContentRenderer blocks={page.blocks} content={page.content} title={page.title} />
+  </div>
+</Layout>

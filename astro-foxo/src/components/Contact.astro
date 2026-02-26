@@ -1,0 +1,244 @@
+---
+import type { ContactBlockData, CF7Form } from '../lib/types';
+import { getForm } from '../lib/wp-api';
+
+interface Props {
+  data: ContactBlockData;
+}
+
+const { data } = Astro.props;
+
+let form: CF7Form | null = null;
+if (data.contact_form) {
+  try {
+    form = await getForm(data.contact_form);
+  } catch {
+    // Form not available
+  }
+}
+
+// Parse additional_settings for redirect URL
+let redirectUrl = '';
+if (form?.additional_settings) {
+  const match = form.additional_settings.match(/on_sent_ok:\s*["']location\.replace\(\s*'([^']+)'\s*\)["']/);
+  if (match) redirectUrl = match[1];
+  const match2 = form.additional_settings.match(/redirect_url\s+["']([^"']+)["']/);
+  if (match2) redirectUrl = match2[1];
+}
+
+const inputClass = 'w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f7941e] focus:border-transparent text-white placeholder:text-gray-500';
+---
+
+<section id="contact" class="py-20 md:py-28 relative">
+  <!-- Background glow -->
+  <div class="absolute top-0 left-0 w-96 h-96 bg-[#f7941e]/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-[#f7941e]/10 rounded-full blur-3xl"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
+        {data.contact_heading}
+      </h2>
+      {data.contact_description && (
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">{data.contact_description}</p>
+      )}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Contact Information -->
+      {data.contact_info_cards && data.contact_info_cards.length > 0 && (
+        <div class="space-y-6">
+          <div class="flex flex-col justify-between h-full max-lg:gap-4">
+            {data.contact_info_cards.map((card) => (
+              <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
+                <div class="flex items-start gap-4">
+                  {card.icon && (
+                    <div class="w-12 h-12 bg-[#f7941e]/20 rounded-xl flex items-center justify-center shrink-0">
+                      <img src={card.icon.url} alt={card.icon.alt} width="24" height="24" class="w-6 h-6" />
+                    </div>
+                  )}
+                  <div>
+                    <p class="text-sm text-gray-500 mb-1">{card.label}</p>
+                    <p class="text-lg font-semibold text-white" set:html={card.value.replace(/\n/g, '<br />')} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Contact Form -->
+      <div class="lg:col-span-2">
+        {form ? (
+          <form
+            id="contact-form"
+            class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8"
+            data-cf7-id={form.id}
+            data-redirect={redirectUrl || undefined}
+          >
+            <div class="space-y-6">
+              {form.fields.map((field) => {
+                // Submit button
+                if (field.type === 'submit') {
+                  return (
+                    <button
+                      type="submit"
+                      class="w-full inline-flex items-center justify-center gap-2 bg-[#f7941e] text-white px-8 py-4 rounded-full hover:bg-[#e08315] transition-all shadow-lg shadow-[#f7941e]/30"
+                    >
+                      {field.label}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 2-7 20-4-9-9-4Z"></path>
+                        <path d="m22 2-11 11"></path>
+                      </svg>
+                    </button>
+                  );
+                }
+
+                // Acceptance checkbox
+                if (field.input_type === 'acceptance') {
+                  return (
+                    <label class="flex items-start gap-3 cursor-pointer text-gray-400 text-sm">
+                      <input
+                        type="checkbox"
+                        name={field.name}
+                        value="1"
+                        required={field.required}
+                        class="mt-1 accent-[#f7941e]"
+                      />
+                      <span>{field.content}</span>
+                    </label>
+                  );
+                }
+
+                // Textarea
+                if (field.input_type === 'textarea') {
+                  return (
+                    <div>
+                      <textarea
+                        name={field.name}
+                        required={field.required}
+                        rows={6}
+                        class={`${inputClass} resize-none`}
+                        placeholder={field.placeholder || undefined}
+                      />
+                    </div>
+                  );
+                }
+
+                // Select
+                if (field.input_type === 'select') {
+                  return (
+                    <div>
+                      <select
+                        name={field.name}
+                        required={field.required}
+                        class={inputClass}
+                      >
+                        {field.placeholder && <option value="">{field.placeholder}</option>}
+                        {field.values?.map((val) => (
+                          <option value={val}>{val}</option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                }
+
+                // Checkbox / Radio
+                if (field.input_type === 'checkbox' || field.input_type === 'radio') {
+                  return (
+                    <fieldset class="space-y-2">
+                      {field.values?.map((val) => (
+                        <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                          <input
+                            type={field.input_type}
+                            name={field.input_type === 'checkbox' ? `${field.name}[]` : field.name}
+                            value={val}
+                            class="accent-[#f7941e]"
+                          />
+                          {val}
+                        </label>
+                      ))}
+                    </fieldset>
+                  );
+                }
+
+                // Default: text, email, tel, url, number
+                return (
+                  <div>
+                    <input
+                      type={field.input_type || 'text'}
+                      name={field.name}
+                      required={field.required}
+                      class={inputClass}
+                      placeholder={field.placeholder || undefined}
+                    />
+                  </div>
+                );
+              })}
+
+              <div id="form-status" class="hidden text-center py-3 rounded-xl"></div>
+            </div>
+          </form>
+        ) : (
+          <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 text-gray-400 text-center">
+            Formulář není k dispozici.
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  if (form) {
+    const statusEl = document.getElementById("form-status")!;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const cf7Id = form.dataset.cf7Id;
+      const redirectUrl = form.dataset.redirect;
+      if (!cf7Id) return;
+
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const originalHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Odesílám...";
+
+      try {
+        const formData = new FormData(form);
+        formData.append("_wpcf7", cf7Id);
+        formData.append("_wpcf7_unit_tag", `wpcf7-f${cf7Id}-o1`);
+
+        // Submit via Astro proxy (no CORS issues)
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (result.status === "mail_sent") {
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+            return;
+          }
+          statusEl.className = "text-center py-3 rounded-xl bg-green-500/20 text-green-300";
+          statusEl.textContent = result.message || "Zpráva byla odeslána!";
+          form.reset();
+        } else {
+          statusEl.className = "text-center py-3 rounded-xl bg-red-500/20 text-red-300";
+          statusEl.textContent = result.message || "Nastala chyba při odesílání.";
+        }
+      } catch {
+        statusEl.className = "text-center py-3 rounded-xl bg-red-500/20 text-red-300";
+        statusEl.textContent = "Nastala chyba při odesílání. Zkuste to prosím znovu.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHtml;
+      }
+    });
+  }
+</script>

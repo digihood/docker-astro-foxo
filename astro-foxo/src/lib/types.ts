@@ -135,6 +135,8 @@ export interface WPSiteOptions {
     facebook: string;
   };
   copyright_text: string;
+  privacy_link: WPLink | null;
+  terms_link: WPLink | null;
 }
 
 export interface WPSeoHead {

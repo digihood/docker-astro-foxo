@@ -82,6 +82,23 @@ add_action( 'acf/init', function () {
                 'type'        => 'url',
                 'placeholder' => 'https://facebook.com/foxo',
             ],
+            // === Odkazy v zápatí ===
+            [
+                'key'           => 'field_opt_privacy_link',
+                'label'         => 'Ochrana soukromí',
+                'name'          => 'privacy_link',
+                'type'          => 'link',
+                'return_format' => 'array',
+                'instructions'  => 'Odkaz na stránku ochrany soukromí.',
+            ],
+            [
+                'key'           => 'field_opt_terms_link',
+                'label'         => 'Obchodní podmínky',
+                'name'          => 'terms_link',
+                'type'          => 'link',
+                'return_format' => 'array',
+                'instructions'  => 'Odkaz na stránku obchodních podmínek.',
+            ],
             // === Copyright ===
             [
                 'key'         => 'field_opt_copyright',

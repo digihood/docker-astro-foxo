@@ -285,6 +285,8 @@ function foxo_api_get_options() {
             'facebook'  => get_field( 'social_facebook', 'option' ) ?: '',
         ],
         'copyright_text'     => get_field( 'copyright_text', 'option' ) ?: '',
+        'privacy_link'       => get_field( 'privacy_link', 'option' ) ?: null,
+        'terms_link'         => get_field( 'terms_link', 'option' ) ?: null,
     ] );
 }
 
@@ -395,15 +397,16 @@ function foxo_api_get_form( WP_REST_Request $request ) {
         $name_escaped = preg_quote( $field['name'], '/' );
 
         // Pattern 1: <label...>LABEL_TEXT [tag field-name ...]</label>
-        if ( preg_match( '/<label[^>]*>\s*(.+?)\s*\[\w+\*?\s+' . $name_escaped . '\b/s', $form_body, $m ) ) {
-            $label_text = trim( strip_tags( $m[1] ) );
+        // [^<\[]+ ensures we don't cross HTML tags or CF7 shortcodes
+        if ( preg_match( '/<label[^>]*>\s*([^<\[]+)\s*\[\w+\*?\s+' . $name_escaped . '\b/', $form_body, $m ) ) {
+            $label_text = trim( $m[1] );
             if ( $label_text ) {
                 $field['label'] = $label_text;
             }
         }
         // Pattern 2: <label...>LABEL_TEXT</label> ... [tag field-name ...]
-        elseif ( preg_match( '/<label[^>]*>\s*(.+?)\s*<\/label>\s*\[\w+\*?\s+' . $name_escaped . '\b/s', $form_body, $m ) ) {
-            $label_text = trim( strip_tags( $m[1] ) );
+        elseif ( preg_match( '/<label[^>]*>\s*([^<]+?)\s*<\/label>\s*\[\w+\*?\s+' . $name_escaped . '\b/', $form_body, $m ) ) {
+            $label_text = trim( $m[1] );
             if ( $label_text ) {
                 $field['label'] = $label_text;
             }

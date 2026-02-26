@@ -115,6 +115,30 @@ const currentYear = new Date().getFullYear();
 
     <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-gray-500 text-sm">&copy; {currentYear} {options.copyright_text || 'Foxo. Všechna práva vyhrazena.'}</p>
+      {(options.privacy_link || options.terms_link) && (
+        <div class="flex gap-6 text-sm">
+          {options.privacy_link && (
+            <a
+              href={options.privacy_link.url}
+              target={options.privacy_link.target || undefined}
+              rel={options.privacy_link.target === '_blank' ? 'noopener noreferrer' : undefined}
+              class="text-gray-500 hover:text-[#f7941e] transition-colors"
+            >
+              {options.privacy_link.title || 'Ochrana soukromí'}
+            </a>
+          )}
+          {options.terms_link && (
+            <a
+              href={options.terms_link.url}
+              target={options.terms_link.target || undefined}
+              rel={options.terms_link.target === '_blank' ? 'noopener noreferrer' : undefined}
+              class="text-gray-500 hover:text-[#f7941e] transition-colors"
+            >
+              {options.terms_link.title || 'Obchodní podmínky'}
+            </a>
+          )}
+        </div>
+      )}
     </div>
   </div>
 </footer>

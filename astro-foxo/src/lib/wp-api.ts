@@ -1,6 +1,7 @@
 import type { WPPageResponse, WPMenuItem, WPSiteOptions, WPSeoHead, CF7Form } from './types';
 
-const WP_API_URL = import.meta.env.WP_API_URL || 'http://localhost:8080';
+const WP_API_URL = (import.meta.env.WP_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const PUBLIC_SITE_URL = (import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321').replace(/\/$/, '');
 
 async function fetchAPI<T>(endpoint: string): Promise<T> {
   const url = `${WP_API_URL}/wp-json/foxo/v1${endpoint}`;
@@ -70,5 +71,13 @@ export async function getSeoHead(pageUrl: string): Promise<string> {
     return '';
   }
 
-  return data.head;
+  let head = data.head;
+  head = head.replaceAll(WP_API_URL, PUBLIC_SITE_URL);
+
+  // Handle protocol-relative URLs (//backend-host/...)
+  const wpHost = WP_API_URL.replace(/^https?:/, '');
+  const feHost = PUBLIC_SITE_URL.replace(/^https?:/, '');
+  head = head.replaceAll(wpHost, feHost);
+
+  return head;
 }
